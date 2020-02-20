@@ -23,7 +23,7 @@
 #define STDOUT 1
 #define STDERR 2
 
-#define MENU_MSG "Schedule Event(s)\nCheck Calendar(c)\nShow events in an order(o)\nWhat do you want to do?\n"
+#define MENU_MSG "Schedule Event (s)\nCheck Calendar (c)\nShow events in an order (o)\nWhat do you want to do? (q to quit)\nInput > "
 #define INV_INPUT "Invalid input!\n"
 
 
