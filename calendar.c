@@ -274,9 +274,7 @@ int schedule(char * file_str) {
 }
 
 int check_calendar(char * file_str) {
-
     char yn;
-
     do {
         printf("Do you want to check your calendar?(y/n) ");
         scanf(" %c", &yn);

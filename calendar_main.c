@@ -15,17 +15,26 @@
  *
  * =====================================================================================
  */
+
 #include <stdlib.h>
 
 #include "calendar.h"
 
+
 int main(int argc, char *argv[]) {
-    char yn;
     if(argc != 2) {
         printf("Please provide a second argument with the file's name!\n");
         return 0;
     }
 
+    FILE * f = fopen(argv[1], "r");
+    if(f == NULL) {
+        printf("File doesn't exist!\n");
+        printf("Creating file...\n\n");
+        f = fopen(argv[1], "w");
+    }
+
+    char yn;
     do {
         printf(MENU_MSG);
         scanf(" %c", &yn);
