@@ -49,7 +49,7 @@ int event_order(char * file_str, int sort_order) {
         if(c == '\n') lines += 1;
     }
 
-    char * buffer = malloc(i * sizeof(char));
+    char * buffer = (char*)malloc(i * sizeof(char));
     if (buffer == NULL) {
         printf("Not allocated!\n");
         free(buffer);
@@ -57,107 +57,65 @@ int event_order(char * file_str, int sort_order) {
     }
     int buffer_size = i * sizeof(char);
 
-    /* char buffer [i * sizeof(char)]; */
-    /* int buffer_size = i * sizeof(char); */
+    //setting up buffer content and position of the start of the lines
+    int l_start[lines];
+    l_start[0] = 0;
+    int l = 1;
     rewind(f);
     for(i = 0; i < buffer_size; i++) {
         buffer[i] = getc(f);
+        if(buffer[i] == '\n' && l < lines) {
+            l_start[l] = i+1;
+            l += 1;
+        }
     }
     fclose(f);
 
-    printf("\n%d\n", i);
-    //b and b2 contain the 'dynamic' size of buf and buf2 respectively
-    //b_full and b2_full indicate if bufs have reached their \n and therefore are full
-    //rev_buf_order to change logic order without having to exchange buf and buf2 content
-    for(int j = 0; j < lines; j++) {
-        char buf [264], buf2 [264];
-        int b = 0, b2 = 0;
-        int b_full = 0, b2_full = 0;
-        int at_line = 0;
-        int rev_buf_order = 0;
-        for(int i = 0; i < buffer_size; i++) {
-            if(buffer[i] == '\0') break;
-            if(b_full == 0) {
-                buf[b] = buffer[i];
-                if(buf[b] != '\n') {
-                    b++;
-                }
-                else {
-                    b_full = 1;
-                    b++;
+    char * p_b = &buffer[0];
+    //setting up the order, starting by finding the first element and going down from there
+    if(sort_order) {
+        for(i = 0; i < lines; i++) {
+            for(int j = i+1; j < lines; j++) {
+                //compare char by char in ascending order by date
+                for(int c = 0; c < 10; c++) {
+                    //l_start[i] is the index position of the first char in one of the lines of buffer
+                    if(*(p_b+l_start[i]+c) < *(p_b+l_start[j]+c)) break;
+                    if(*(p_b+l_start[i]+c) > *(p_b+l_start[j]+c)) {
+                        int buf = l_start[i];
+                        l_start[i] = l_start[j];
+                        l_start[j] = buf;
+                        break;
+                    }
                 }
             }
-            else if(b2_full == 0) {
-                buf2[b2] = buffer[i];
-                if(buf2[b] != '\n') {
-                    b2++;
-                }
-                else {
-                    b2_full = 1;
-                    b2++;
+        }
+    } else {
+        for(i = 0; i < lines; i++) {
+            for(int j = i+1; j < lines; j++) {
+                //compare char by char in descending order by date
+                for(int c = 0; c < 10; c++) {
+                    if(*(p_b+l_start[i]+c) > *(p_b+l_start[j]+c)) break;
+                    if(*(p_b+l_start[i]+c) < *(p_b+l_start[j]+c)) {
+                        int buf = l_start[i];
+                        l_start[i] = l_start[j];
+                        l_start[j] = buf;
+                        break;
+                    }
                 }
             }
-            /* if((b2_full == 1) && (b_full == 1)) { */
-            /*     printf("%s\n%s\n", buf, buf2); */
-            /*     int order = -1; */
-            /*     for(int k = 0; k < 10; k++) { */
-            /*         if(buf[k] > buf2[k]) { */
-            /*             if(rev_buf_order) */
-            /*                 order = 0; */
-            /*             else */
-            /*                 order = 1; */
-            /*             break; */
-            /*         } */
-            /*         if(buf[k] < buf2[k]) { */
-            /*             if(rev_buf_order) */
-            /*                 order = 1; */
-            /*             else */
-            /*                 order = 0; */
-            /*             break; */
-            /*         } */
-            /*     } */
-            /*     if(sort_order == order) { */
-            /*         for(int k = 0; k < b2; k++) { */
-            /*             buffer[(i + k + 1) - (b2 + b)] = buf2[k]; */
-            /*         } */
-            /*         for(int k = 0; k < b; k++) { */
-            /*             buffer[(i + k +1) - b] = buf[k]; */
-            /*         } */
-            /*         if(rev_buf_order) { */
-            /*             b_full = 0; */
-            /*             b = 0; */
-            /*             rev_buf_order = 0; */
-            /*         } */
-            /*         else { */
-            /*             b2_full = 0; */
-            /*             b2 = 0; */
-            /*             rev_buf_order = 1; */
-            /*         } */
-            /*     } */
-            /*     else { */
-            /*         if(rev_buf_order) { */
-            /*             b2_full = 0; */
-            /*             b2 = 0; */
-            /*             rev_buf_order = 0; */
-            /*         } */
-            /*         else { */
-            /*             b_full = 0; */
-            /*             b = 0; */
-            /*             rev_buf_order = 1; */
-            /*         } */
-            /*     } */
-            /* } */
         }
     }
 
-    printf("%s\n", buffer);
-    /* f = fopen(file_str, "w"); */
-
-    /* for(i = 0; i < buffer_size; i++) { */
-    /*     fprintf(f, "%c", buffer[i]); */
-    /* } */
-    /* fclose(f); */
-    /* printf("\nThe buffer has a sizeof : %d \n", buffer_size ); */
+    printf("\n");
+    for(i = 0; i < lines; i++) {
+        int c = 0;
+        while(*(p_b+l_start[i]+c) != '\n') {
+            printf("%c", *(p_b+l_start[i]+c));
+            c++;
+        }
+        printf("\n");
+    }
+    printf("\n");
     free(buffer);
     return 0;
 }
