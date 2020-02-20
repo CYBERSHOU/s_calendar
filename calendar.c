@@ -145,7 +145,6 @@ int * event_input_date() {
         }
         empty_stdin_buffer();
     }
-    //there is no such thing as ^ to make powers of a number
     date[0] = (year[0]*(1000)) + (year[1]*(100)) + (year[2]*(10)) + year[3];
     /* printf("%d", date[0]); */
 
@@ -209,7 +208,7 @@ int * event_input_date() {
             empty_stdin_buffer();
             continue;
         }
-        if (date[1] == 2 && buff == 29 && (((date[0] % 4) != 0) && ((date[0] % 400) != 0)) || (buff == 30 && date[1] == 2) ) {
+        if ( ((date[1] == 2) && (buff == 29) && (((date[0] % 4) != 0) && ((date[0] % 400) != 0))) || (buff == 30 && date[1] == 2) ) {
             printf("This isn't a leap year!\n");
             empty_stdin_buffer();
             continue;
@@ -292,7 +291,7 @@ int check_calendar(char * file_str) {
     FILE * fo;
     fo = fopen(file_str, "r");
     fgets(date, 11, fo);
-    printf("%s\n", &date);
+    printf("%s\n", date);
 
     return 0;
 }

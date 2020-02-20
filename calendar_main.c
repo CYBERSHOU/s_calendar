@@ -22,9 +22,10 @@
 int main(int argc, char *argv[]) {
     char yn;
     if(argc != 2) {
-        printf("Please provide a second argument with the file's name!");
+        printf("Please provide a second argument with the file's name!\n");
         return 0;
     }
+
     do {
         printf(MENU_MSG);
         scanf(" %c", &yn);
