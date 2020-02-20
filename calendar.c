@@ -285,12 +285,15 @@ int check_calendar(char * file_str) {
         printf("\n");
     } while(yn != 'y');
 
-    char date[11];
     FILE * fo;
     fo = fopen(file_str, "r");
-    fgets(date, 11, fo);
-    printf("%s\n", date);
-
+    char c;
+    while(c != EOF) {
+        c = getc(fo);
+        if( c != EOF)
+            printf("%c", c);
+    }
+    printf("\n");
     return 0;
 }
 
