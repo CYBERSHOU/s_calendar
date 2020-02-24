@@ -23,7 +23,7 @@
 #define STDOUT 1
 #define STDERR 2
 
-#define MENU_MSG "Schedule Event (s)\nCheck Calendar (c)\nShow events in an order (o)\nWhat do you want to do? (q to quit)\nInput > "
+#define MENU_MSG "Schedule Event (s)\nCheck Calendar (c)\nShow events in an order (o)\n(q to quit)\n > "
 #define INV_INPUT "Invalid input!\n"
 
 
@@ -34,8 +34,7 @@ int * event_input_date(void);
 int schedule(char *);
 int check_calendar(char *);
 int event_order(char *, int);
-
-void empty_stdin_buffer(void);
+int empty_stdin_buffer(void);
 
 
 

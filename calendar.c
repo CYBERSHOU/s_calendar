@@ -126,27 +126,24 @@ int * event_input_date() {
     int i = -1;
 
     int year[4];
-    /* scanf(" %d%d%d", &date[0], &date[1], &date[2]); */
     while(i == -1) {
         printf("Insert year(yyyy): ");
         for(i = 0; i < 4; i++) {
-            /* printf("FOR%d", i); */
             buff = getchar();
-            /* printf("getchar %d \n", buff); */
             if(buff < 48 || buff > 58 || buff == '\n'){
                 printf(INV_INPUT);
                 i = -1;
                 break;
             }
             buff -= 48;
-            /* printf("buff %d\n", buff); */
             year[i] = buff;
-            /* printf("%d%d%d%d", year[0], year[1], year[2], year[3]); */
         }
-        empty_stdin_buffer();
+        if(empty_stdin_buffer()) {
+             i = -1;
+             printf("Please make sure to insert only 4 digits!\n");
+        }
     }
     date[0] = (year[0]*(1000)) + (year[1]*(100)) + (year[2]*(10)) + year[3];
-    /* printf("%d", date[0]); */
 
     int month[2];
     while(1) {
@@ -170,14 +167,15 @@ int * event_input_date() {
         else {
             buff = month[0]*(10) + month[1];
         }
+        if(empty_stdin_buffer()) {
+             i = -1;
+             printf("Please make sure to insert only 2 digits!\n");
+             continue;
+        }
         if(buff > 12 || buff < 1) {
             printf(INV_INPUT);
         }
-        else {
-            if(i == 2) empty_stdin_buffer();
-            break;
-        }
-        empty_stdin_buffer();
+        break;
     }
     date[1] = buff;
 
@@ -186,6 +184,7 @@ int * event_input_date() {
         printf("Insert day(dd): ");
         for(i = 0; i < 2; i++) {
             buff = getchar();
+            //dec ascii
             if(buff == 10) {
                 break;
             }
@@ -203,25 +202,23 @@ int * event_input_date() {
         else {
             buff = days[0]*(10) + days[1];
         }
+        if (empty_stdin_buffer()) {
+            printf("Please insert only 2 digits!\n");
+            continue;
+        }
         if (buff > 31 || buff <= 0) {
             printf("Do you live on planet earth!?\n");
-            empty_stdin_buffer();
             continue;
         }
         if ( ((date[1] == 2) && (buff == 29) && (((date[0] % 4) != 0) && ((date[0] % 400) != 0))) || (buff == 30 && date[1] == 2) ) {
             printf("This isn't a leap year!\n");
-            empty_stdin_buffer();
             continue;
         }
         if (buff > 30 && (( (date[1] % 2) == 0 && date[1] < 7) || ( (date[1] % 2 != 0) && date[1] > 7 ) )) {
             printf("This month only has a maximum of 30 days!\n");
-            empty_stdin_buffer();
             continue;
         }
-        else {
-            if( i == 2) empty_stdin_buffer();
-            break;
-        }
+        break;
     }
     date[2] = buff;
 
@@ -297,13 +294,14 @@ int check_calendar(char * file_str) {
     return 0;
 }
 
-void empty_stdin_buffer() {
-    char c;
+int empty_stdin_buffer() {
+    char c = getchar();
+    if( c == '\n') return 0;
     while(c != '\n'){
         c = getchar();
     }
 
-    return;
+    return 1;
 }
 
 //eof
