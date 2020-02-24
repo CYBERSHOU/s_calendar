@@ -31,6 +31,9 @@ char * event_input_summary(void);
 
 int * event_input_date(void);
 
+int event_input_year(void);
+int event_input_month(void);
+int event_input_day(int * date);
 int schedule(char *);
 int check_calendar(char *);
 int event_order(char *, int);

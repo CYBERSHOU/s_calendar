@@ -122,10 +122,20 @@ int event_order(char * file_str, int sort_order) {
 
 int * event_input_date() {
     static int date[3];
-    int buff;
-    int i = -1;
 
+    date[0] = event_input_year();
+
+    date[1] = event_input_month();
+
+    date[2] = event_input_day(date);
+
+    return date;
+}
+
+int event_input_year() {
     int year[4];
+    int i = -1;
+    int buff;
     while(i == -1) {
         printf("Insert year(yyyy): ");
         for(i = 0; i < 4; i++) {
@@ -143,10 +153,14 @@ int * event_input_date() {
              printf("Please make sure to insert only 4 digits!\n");
         }
     }
-    date[0] = (year[0]*(1000)) + (year[1]*(100)) + (year[2]*(10)) + year[3];
+    return (year[0]*(1000)) + (year[1]*(100)) + (year[2]*(10)) + year[3];
+}
 
+int event_input_month() {
     int month[2];
-    while(1) {
+    int i = -1;
+    int buff;
+    while(i == -1) {
         printf("Insert month(mm): ");
         for(i = 0; i < 2; i++) {
             buff = getchar();
@@ -168,18 +182,23 @@ int * event_input_date() {
             buff = month[0]*(10) + month[1];
         }
         if(empty_stdin_buffer()) {
-             i = -1;
-             printf("Please make sure to insert only 2 digits!\n");
-             continue;
+            i = -1;
+            printf("Please make sure to insert only 2 digits!\n");
+            continue;
         }
         if(buff > 12 || buff < 1) {
+            i = -1;
             printf(INV_INPUT);
+            continue;
         }
-        break;
     }
-    date[1] = buff;
+    return buff;
+}
 
+int event_input_day(int * date) {
     int days[2];
+    int i = -1;
+    int buff;
     while(1) {
         printf("Insert day(dd): ");
         for(i = 0; i < 2; i++) {
@@ -220,9 +239,7 @@ int * event_input_date() {
         }
         break;
     }
-    date[2] = buff;
-
-    return date;
+    return buff;
 }
 
 int schedule(char * file_str) {
