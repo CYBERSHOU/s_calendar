@@ -19,39 +19,39 @@
 
 
 char * event_input_summary() {
-    static char summary[32];
-
-    printf("Insert event summary(chars-32): ");
-
-    int i;
-    for(i = 0; i < 32; i++) {
-        char buffer = getchar();
-        if(buffer == '\n')
-            break;
-        summary[i] = buffer;
-    }
-
+    static char summary[33];
+    char y_n;
+    char buffer;
+    do{
+        printf("Insert event summary(chars-32): ");
+        summary[0] = '\0';
+        int i = 0;
+        for(i = 0; i < 32; i++) {
+            buffer = getchar();
+            if(buffer == '\n')
+                break;
+            summary[i] = buffer;
+        }
+        summary[32] = '\0';
+        printf("SUMMARY: %s\nContinue? (Y/n) ", summary);
+        if (buffer != '\n') empty_stdin_buffer();
+        y_n = getchar();
+        if (y_n != '\n') empty_stdin_buffer();
+    }while(y_n != 'y' && y_n != '\n');
     return summary;
 }
 
-int event_order(char * file_str, int sort_order) {
 
-    FILE * f;
-    f = fopen(file_str, "r");
-    char c = ' ';
-    int i = 0;
-    int lines = 0;
-    while(1) {
-        c = getc(f);
-        if(c == EOF)
-            break;
-        i++;
-        if(c == '\n') lines += 1;
-    }
+int event_order(char * file_str, int sort_order) {
+    //read_file_chars - reading number of chars(i) and lines.
+    int * arr = read_file_chars(file_str);
+    int i = arr[0];
+    int lines = arr[1];
+    if (i == 0) return 1;
 
     char * buffer = (char*)malloc(i * sizeof(char));
     if (buffer == NULL) {
-        printf("Not allocated!\n");
+        perror("Unable to allocate space!");
         free(buffer);
         return 1;
     }
@@ -61,7 +61,7 @@ int event_order(char * file_str, int sort_order) {
     int l_start[lines];
     l_start[0] = 0;
     int l = 1;
-    rewind(f);
+    FILE * f = fopen(file_str, "r");
     for(i = 0; i < buffer_size; i++) {
         buffer[i] = getc(f);
         if(buffer[i] == '\n' && l < lines) {
@@ -72,13 +72,15 @@ int event_order(char * file_str, int sort_order) {
     fclose(f);
 
     char * p_b = &buffer[0];
-    //setting up the order, starting by finding the first element and going down from there
+    //setting up the order, starting by finding the first element and
+    //going down from there
     if(sort_order) {
         for(i = 0; i < lines; i++) {
             for(int j = i+1; j < lines; j++) {
                 //compare char by char in ascending order by date
                 for(int c = 0; c < 10; c++) {
-                    //l_start[i] is the index position of the first char in one of the lines of buffer
+                    //l_start[i] is the index position of the first char
+                    //in one of the lines of buffer
                     if(*(p_b+l_start[i]+c) < *(p_b+l_start[j]+c)) break;
                     if(*(p_b+l_start[i]+c) > *(p_b+l_start[j]+c)) {
                         int buf = l_start[i];
@@ -120,6 +122,7 @@ int event_order(char * file_str, int sort_order) {
     return 0;
 }
 
+
 int * event_input_date() {
     static int date[3];
 
@@ -131,6 +134,7 @@ int * event_input_date() {
 
     return date;
 }
+
 
 int event_input_year() {
     int year[4];
@@ -155,6 +159,7 @@ int event_input_year() {
     }
     return (year[0]*(1000)) + (year[1]*(100)) + (year[2]*(10)) + year[3];
 }
+
 
 int event_input_month() {
     int month[2];
@@ -194,6 +199,7 @@ int event_input_month() {
     }
     return buff;
 }
+
 
 int event_input_day(int * date) {
     int days[2];
@@ -242,15 +248,36 @@ int event_input_day(int * date) {
     return buff;
 }
 
+
+int * read_file_chars(char * file_str) {
+
+    FILE * f;
+    f = fopen(file_str, "r");
+    char c = ' ';
+    int i = 0;
+    int lines = 0;
+    while(1) {
+        c = getc(f);
+        if(c == EOF) {
+            int arr [2] = {i, lines};
+            int * p = arr;
+            return p;
+        }
+        i++;
+        if(c == '\n') lines += 1;
+    }
+}
+
+
 int schedule(char * file_str) {
     char yn;
 
     do {
-        printf("Do you want to schedule an event?(y/n) ");
+        printf("Do you want to schedule an event?(Y/n) ");
         yn = getchar();
-        empty_stdin_buffer();
+        if(yn != '\n') empty_stdin_buffer();
 
-        if (yn == 'n') return 1;
+        if (yn != 'y' || yn != '\n') return 1;
 
         printf("\n");
     } while(yn != 'y');
@@ -259,7 +286,7 @@ int schedule(char * file_str) {
     int *p;
     p = event_input_date();
     s = event_input_summary();
-
+    printf("\n");
 
     FILE *fi;
     fi = fopen(file_str, "a");
@@ -287,6 +314,7 @@ int schedule(char * file_str) {
     return 0;
 }
 
+
 int check_calendar(char * file_str) {
     char yn;
     do {
@@ -307,9 +335,19 @@ int check_calendar(char * file_str) {
         if( c != EOF)
             printf("%c", c);
     }
+    fclose(fo);
     printf("\n");
     return 0;
 }
+
+
+int wipe_old_events(char * file_str) {
+    FILE * f = fopen(file_str, "wr");
+    //delete old events that have ocurred relative to current date
+    fclose(f);
+    return 0;
+}
+
 
 int empty_stdin_buffer() {
     char c = getchar();
@@ -320,5 +358,7 @@ int empty_stdin_buffer() {
 
     return 1;
 }
+
+
 
 //eof

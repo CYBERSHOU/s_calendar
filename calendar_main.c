@@ -29,10 +29,10 @@ int main(int argc, char *argv[]) {
 
     FILE * f = fopen(argv[1], "r");
     if(f == NULL) {
-        printf("File doesn't exist!\n");
-        printf("Creating file...\n\n");
+        printf("File doesn't exist.\nCreating file...\n\n");
         f = fopen(argv[1], "w");
     }
+    else fclose(f);
 
     char yn;
     do {
@@ -53,18 +53,25 @@ int main(int argc, char *argv[]) {
             case 'o':
                 printf("Ascending(1) or Descending(0) order? ");
                 scanf(" %d", &x);
-                if(x == 1 || x == 0)
-                    event_order(argv[1], x);
+                if(x == 1 || x == 0) {
+                    if(event_order(argv[1], x)) printf("File is empty...\n");
+                }
                 else
                     printf("\nInsert 1 or 0!\n\n");
+                break;
+            case 'w':
+                printf("Wiping old events...\n");
+                if(wipe_old_events(argv[1])) {
+                    printf("No old events found.\n");
+                    break;
+                }
+                printf("Old events wiped.\n");
                 break;
             default:
                 printf("\n# Please insert a valid option #\n\n");
                 break;
         }
     }while (yn != 'q');
-
-    /* event_order("calendar_events.txt", 0); */
 
     return 0;
 }

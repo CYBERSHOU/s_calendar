@@ -10,7 +10,7 @@ all: files
 	$(CC) $(CCF) $(FILE).o $(MAIN).o -o $(MAIN)
 
 run: all
-	./$(MAIN)
+	./$(MAIN) calendar_events.txt
 
 files:
 	$(CC) -c $(FILE).c $(MAIN).c $(CCF)
